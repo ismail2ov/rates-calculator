@@ -11,7 +11,7 @@ public class Main {
         try {
             InputParameters inputParameters = new InputParameters(args);
             QuoteCalculator quoteCalculator = new QuoteCalculator(new DataReaderImpl(), new OutputPrinterImpl());
-            quoteCalculator.calculate(inputParameters);
+            quoteCalculator.calculate(inputParameters.getMarketFile(), inputParameters.getLoanAmount());
         } catch (Exception e) {
             OutputPrinterImpl.printErrorMessage(e.getMessage());
         }

@@ -3,7 +3,6 @@ package es.develex.application;
 import es.develex.domain.NotFoundQuoteException;
 import es.develex.domain.QuoteOffer;
 import es.develex.domain.QuoteResult;
-import es.develex.infrastructure.InputParameters;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,12 +18,12 @@ public class QuoteCalculator {
         this.outputPrinter = outputPrinter;
     }
 
-    public void calculate(InputParameters inputParameters) throws NotFoundQuoteException {
-        List<QuoteOffer> quoteOffers = readOffers(inputParameters.getMarketFile());
+    public void calculate(String marketFile, Integer loanAmount)  throws NotFoundQuoteException {
+        List<QuoteOffer> quoteOffers = readOffers(marketFile);
         quoteOffers.sort(Comparator.comparing(QuoteOffer::getRate));
 
-        QuoteResult quoteResult = calculateQuote(quoteOffers, inputParameters.getLoanAmount());
-        outputPrinter.printQuote(inputParameters.getLoanAmount(), quoteResult);
+        QuoteResult quoteResult = calculateQuote(quoteOffers, loanAmount);
+        outputPrinter.printQuote(loanAmount, quoteResult);
     }
 
     private QuoteResult calculateQuote(List<QuoteOffer> quoteOffers, Integer loanAmount) throws NotFoundQuoteException {
