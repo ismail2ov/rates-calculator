@@ -1,5 +1,6 @@
-package es.develex;
+package es.develex.infrastructure;
 
+import es.develex.infrastructure.InputParameters;
 import org.junit.Test;
 
 public class InputParametersTest {
