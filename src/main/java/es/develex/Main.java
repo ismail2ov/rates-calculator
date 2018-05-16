@@ -8,12 +8,13 @@ import es.develex.infrastructure.OutputPrinterImpl;
 public class Main {
 
     public static void main(String[] args) {
+        OutputPrinterImpl outputPrinter = new OutputPrinterImpl();
         try {
             InputParameters inputParameters = new InputParameters(args);
-            QuoteCalculator quoteCalculator = new QuoteCalculator(new DataReaderImpl(), new OutputPrinterImpl());
+            QuoteCalculator quoteCalculator = new QuoteCalculator(new DataReaderImpl(), outputPrinter);
             quoteCalculator.calculate(inputParameters.getMarketFile(), inputParameters.getLoanAmount());
         } catch (Exception e) {
-            OutputPrinterImpl.printErrorMessage(e.getMessage());
+            outputPrinter.printMessage(e.getMessage());
         }
     }
 }

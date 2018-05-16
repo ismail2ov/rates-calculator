@@ -4,4 +4,6 @@ import es.develex.domain.QuoteResult;
 
 public interface OutputPrinter {
     void printQuote(Integer loanAmount, QuoteResult quoteResult);
+
+    void printMessage(String message);
 }

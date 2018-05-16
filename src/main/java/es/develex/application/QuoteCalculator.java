@@ -1,6 +1,5 @@
 package es.develex.application;
 
-import es.develex.domain.NotFoundQuoteException;
 import es.develex.domain.QuoteOffer;
 import es.develex.domain.QuoteResult;
 
@@ -18,15 +17,23 @@ public class QuoteCalculator {
         this.outputPrinter = outputPrinter;
     }
 
-    public void calculate(String marketFile, Integer loanAmount)  throws NotFoundQuoteException {
+    public void calculate(String marketFile, Integer loanAmount) {
         List<QuoteOffer> quoteOffers = readOffers(marketFile);
         quoteOffers.sort(Comparator.comparing(QuoteOffer::getRate));
 
-        QuoteResult quoteResult = calculateQuote(quoteOffers, loanAmount);
-        outputPrinter.printQuote(loanAmount, quoteResult);
+        if (hasEnoughQuotes(quoteOffers, loanAmount)) {
+            QuoteResult quoteResult = calculateQuote(quoteOffers, loanAmount);
+            outputPrinter.printQuote(loanAmount, quoteResult);
+        } else {
+            outputPrinter.printMessage("Is not possible to provide a quote at that time.");
+        }
     }
 
-    private QuoteResult calculateQuote(List<QuoteOffer> quoteOffers, Integer loanAmount) throws NotFoundQuoteException {
+    private boolean hasEnoughQuotes(List<QuoteOffer> quoteOffers, Integer loanAmount) {
+        return quoteOffers.stream().mapToInt(quote -> quote.getAvailable()).sum() >= loanAmount;
+    }
+
+    private QuoteResult calculateQuote(List<QuoteOffer> quoteOffers, Integer loanAmount) {
         double totalRepayment = getTotalRepayment(quoteOffers, loanAmount);
 
         double rate = (totalRepayment - loanAmount) * 100 / loanAmount;
@@ -35,7 +42,7 @@ public class QuoteCalculator {
         return new QuoteResult(rate, monthlyRepayment, totalRepayment);
     }
 
-    private double getTotalRepayment(List<QuoteOffer> quoteOffers, Integer loanAmount) throws NotFoundQuoteException {
+    private double getTotalRepayment(List<QuoteOffer> quoteOffers, Integer loanAmount) {
         int borrowed = 0;
         double totalRepayment = 0;
 
@@ -48,11 +55,6 @@ public class QuoteCalculator {
                 break;
             }
         }
-
-        if (borrowed < loanAmount) {
-            throw new NotFoundQuoteException("Is not possible to provide a quote at that time.");
-        }
-
 
         return totalRepayment;
     }

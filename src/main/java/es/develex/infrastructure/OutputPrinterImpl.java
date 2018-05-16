@@ -11,7 +11,8 @@ public class OutputPrinterImpl implements OutputPrinter {
         System.out.printf("Total repayment: £%.2f \n", quoteResult.getTotalRepayment());
     }
 
-    public static void printErrorMessage(String message) {
+    @Override
+    public void printMessage(String message) {
         System.out.println(message);
     }
 }
