@@ -20,12 +20,9 @@ public class DataReaderImpl implements DataReader {
 
         List<QuoteOffer> quoteOffers = new ArrayList<>();
 
-        try {
-            InputStream inputStream = new FileInputStream(new File(marketFile));
+        try (InputStream inputStream = new FileInputStream(new File(marketFile))) {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-
             quoteOffers = br.lines().skip(1).map(mapToQuoteOffer).collect(Collectors.toList());
-
             br.close();
         } catch (IOException e) {
             e.printStackTrace();
