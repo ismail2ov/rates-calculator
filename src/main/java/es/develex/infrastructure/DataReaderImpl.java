@@ -3,41 +3,40 @@ package es.develex.infrastructure;
 import es.develex.application.DataReader;
 import es.develex.domain.QuoteOffer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DataReaderImpl implements DataReader {
-    public List<QuoteOffer> readOffers(String marketFile, String separator) {
+    private String separator;
+
+    public DataReaderImpl(String separator) {
+        this.separator = separator;
+    }
+
+    public List<QuoteOffer> readOffers(String marketFile) {
 
         List<QuoteOffer> quoteOffers = new ArrayList<>();
-        boolean header = true;
-        Scanner scanner = null;
+
         try {
-            scanner = new Scanner(new File(marketFile));
+            InputStream inputStream = new FileInputStream(new File(marketFile));
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
-            while (scanner.hasNext()) {
-                String line = scanner.nextLine();
-                if (header) {
-                    header = false;
-                    continue;
-                }
+            quoteOffers = br.lines().skip(1).map(mapToQuoteOffer).collect(Collectors.toList());
 
-                String[] fields = line.split(separator);
-                if (fields.length == 3) {
-                    quoteOffers.add(new QuoteOffer(fields[0], Double.parseDouble(fields[1]), Integer.parseInt(fields[2])));
-                }
-            }
-
-        } catch (FileNotFoundException e) {
+            br.close();
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            scanner.close();
         }
-
 
         return quoteOffers;
     }
+
+    private Function<String, QuoteOffer> mapToQuoteOffer = (line) -> {
+        String[] fields = line.split(this.separator);
+
+        return new QuoteOffer(fields[0], Double.parseDouble(fields[1]), Integer.parseInt(fields[2]));
+    };
 }

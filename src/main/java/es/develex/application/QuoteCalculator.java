@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public class QuoteCalculator {
-    private static final String SEPARATOR = ",";
     private static final int NUM_MONTHS_LOAN = 36;
     private final DataReader dataReader;
     private final OutputPrinter outputPrinter;
@@ -67,6 +66,6 @@ public class QuoteCalculator {
     }
 
     private List<QuoteOffer> readOffers(String marketFile) {
-        return dataReader.readOffers(marketFile, SEPARATOR);
+        return dataReader.readOffers(marketFile);
     }
 }

@@ -10,8 +10,9 @@ public class Main {
     public static void main(String[] args) {
         OutputPrinterImpl outputPrinter = new OutputPrinterImpl();
         try {
+            final String SEPARATOR = ",";
             InputParameters inputParameters = new InputParameters(args);
-            QuoteCalculator quoteCalculator = new QuoteCalculator(new DataReaderImpl(), outputPrinter);
+            QuoteCalculator quoteCalculator = new QuoteCalculator(new DataReaderImpl(SEPARATOR), outputPrinter);
             quoteCalculator.calculate(inputParameters.getMarketFile(), inputParameters.getLoanAmount());
         } catch (Exception e) {
             outputPrinter.printMessage(e.getMessage());
