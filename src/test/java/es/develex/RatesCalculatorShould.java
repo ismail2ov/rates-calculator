@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Locale;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
@@ -16,6 +17,7 @@ public class RatesCalculatorShould {
 
     @Before
     public void setUp() {
+        Locale.setDefault(new Locale("es", "ES"));
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
