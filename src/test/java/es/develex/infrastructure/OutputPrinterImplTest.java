@@ -1,6 +1,5 @@
 package es.develex.infrastructure;
 
-import es.develex.Main;
 import es.develex.domain.QuoteResult;
 import org.junit.After;
 import org.junit.Before;
@@ -9,8 +8,7 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class OutputPrinterImplTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -25,7 +23,7 @@ public class OutputPrinterImplTest {
     @Test
     public void printQuote() {
         Integer loanAmount = 1000;
-        QuoteResult quoteResult = new QuoteResult(7, 29.72, 1070.04);
+        QuoteResult quoteResult = new QuoteResult(0.07, 29.72, 1070.04);
 
         OutputPrinterImpl outputPrinter = new OutputPrinterImpl();
         outputPrinter.printQuote(loanAmount, quoteResult);

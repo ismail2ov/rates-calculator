@@ -31,7 +31,7 @@ public class RatesCalculatorShould {
     public void test_when_requested_amount_is_1500() {
         String[] args = new String[]{"market.csv", "1500"};
         Main.main(args);
-        String expected = "Requested amount: £1500 \nRate: 7,1% \nMonthly repayment: £44,64 \nTotal repayment: £1607,16 \n";
+        String expected = "Requested amount: £1500 \nRate: 7,1% \nMonthly repayment: £46,26 \nTotal repayment: £1665,39 \n";
         assertEquals(expected, outContent.toString());
     }
 

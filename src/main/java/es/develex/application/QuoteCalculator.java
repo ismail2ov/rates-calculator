@@ -3,6 +3,7 @@ package es.develex.application;
 import es.develex.domain.QuoteOffer;
 import es.develex.domain.QuoteResult;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,33 +31,39 @@ public class QuoteCalculator {
     }
 
     private boolean hasEnoughQuotes(List<QuoteOffer> quoteOffers, Integer loanAmount) {
-        return quoteOffers.stream().mapToInt(quote -> quote.getAvailable()).sum() >= loanAmount;
+        return quoteOffers.stream().mapToInt(QuoteOffer::getAvailable).sum() >= loanAmount;
     }
 
     private QuoteResult calculateQuote(List<QuoteOffer> quoteOffers, Integer loanAmount) {
-        double totalRepayment = getTotalRepayment(quoteOffers, loanAmount);
-
-        double rate = (totalRepayment - loanAmount) * 100 / loanAmount;
-        double monthlyRepayment = totalRepayment / NUM_MONTHS_LOAN;
+        List<QuoteOffer> selectedQuoteOffers = getSelectedQuoteOffers(quoteOffers, loanAmount);
+        double rate = calculateRate(selectedQuoteOffers, loanAmount);
+        double interestRate = Math.pow((1 + rate), (double) 1 / 12) - 1;
+        double monthlyRepayment = (loanAmount * interestRate) / (1 - Math.pow(1 + interestRate, -NUM_MONTHS_LOAN));
+        double totalRepayment = monthlyRepayment * NUM_MONTHS_LOAN;
 
         return new QuoteResult(rate, monthlyRepayment, totalRepayment);
     }
 
-    private double getTotalRepayment(List<QuoteOffer> quoteOffers, Integer loanAmount) {
+    private List<QuoteOffer> getSelectedQuoteOffers(List<QuoteOffer> quoteOffers, Integer loanAmount) {
+        List<QuoteOffer> selectedQuoteOffers = new ArrayList<>();
         int borrowed = 0;
-        double totalRepayment = 0;
 
         for (QuoteOffer offer : quoteOffers) {
-            double amountToBorrow = loanAmount < borrowed + offer.getAvailable() ? loanAmount - borrowed : offer.getAvailable();
+            int amountToBorrow = loanAmount < borrowed + offer.getAvailable() ? loanAmount - borrowed : offer.getAvailable();
+            selectedQuoteOffers.add(new QuoteOffer(offer.getLender(), offer.getRate(), amountToBorrow));
 
-            totalRepayment += amountToBorrow * (1 + offer.getRate());
-
-            if ((borrowed += amountToBorrow) >= loanAmount) {
+            if ((borrowed += offer.getAvailable()) >= loanAmount) {
                 break;
             }
         }
 
-        return totalRepayment;
+        return selectedQuoteOffers;
+    }
+
+    private double calculateRate(List<QuoteOffer> selectedQuoteOffers, Integer loanAmount) {
+        double simpleTotalRepayment = selectedQuoteOffers.stream().mapToDouble(offer -> offer.getAvailable() * (1 + offer.getRate())).sum();
+
+        return (simpleTotalRepayment - loanAmount) / loanAmount;
     }
 
     private List<QuoteOffer> readOffers(String marketFile) {
